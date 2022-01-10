@@ -22,7 +22,7 @@ export default class PostgresSelect<SCHEMA extends { [key: string]: any }, COLUM
 	@Override public get where (): ExpressionBuilder<SCHEMA, this> {
 		return createExpressionBuilder((options, column, operation, ...values) => {
 			this.expression.createBuilder(options, column, operation, ...values);
-			this.expression["tweakLastFilter"]((filter, previous) => previous && filter ? ` AND ${filter}` : filter);
+			this.expression["tweakLastFilter"]((filter, previous) => previous && filter ? ` AND (${filter})` : filter);
 			return this;
 		});
 	}
