@@ -67,9 +67,10 @@ export default class PostgresUpdate<SCHEMA extends { [key: string]: any }, RETUR
 	}
 }
 
-export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> {
+export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> implements UpdateSwitch<SCHEMA, COLUMN> {
 
 	private cases: [PostgresExpression<SCHEMA>, any][] = [];
+	private elseValue?: DataTypeValue<SCHEMA[COLUMN]>;
 	public constructor (private values: any[]) { }
 
 	public get when (): ExpressionBuilder<SCHEMA, UpdateSwitchThen<DataTypeValue<SCHEMA[COLUMN]>, this>> {
@@ -85,6 +86,11 @@ export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN 
 		});
 	}
 
+	public else (value: DataTypeValue<SCHEMA[COLUMN]>) {
+		this.elseValue = value;
+		return this;
+	}
+
 	// @ts-ignore
 	private compile () {
 		let query = `CASE `;
@@ -94,6 +100,9 @@ export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN 
 
 		if (!cases.length) throw new Error("No cases for update");
 		query += cases.map(([expression, value]) => `WHEN ${expression} THEN ${this.value(value)}`).join(" ");
+
+		if (this.elseValue !== undefined)
+			query += ` ELSE ${this.value(this.elseValue)}`;
 
 		return query + " END";
 	}

@@ -9,6 +9,7 @@ export interface UpdateColumns<SCHEMA extends { [key: string]: any }> {
 
 export interface UpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> {
 	when: ExpressionBuilder<SCHEMA, UpdateSwitchThen<DataTypeValue<SCHEMA[COLUMN]>, this>>;
+	else (value: DataTypeValue<SCHEMA[COLUMN]>): this;
 }
 
 export interface UpdateSwitchThen<T, R> {
