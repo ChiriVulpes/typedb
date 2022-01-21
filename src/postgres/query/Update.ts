@@ -1,7 +1,7 @@
 import { Client, Pool, PoolClient, QueryResult } from "pg";
-import { Row } from "../../base/DataType";
+import { DataTypeValue, Row } from "../../base/DataType";
 import { createExpressionBuilder, ExpressionBuilder } from "../../base/query/Expression";
-import Update from "../../base/query/Update";
+import Update, { UpdateSwitch, UpdateSwitchThen } from "../../base/query/Update";
 import Bound from "../../decorator/Bound";
 import Override from "../../decorator/Override";
 import Overwrite from "../../type/Overwrite";
@@ -31,6 +31,13 @@ export default class PostgresUpdate<SCHEMA extends { [key: string]: any }, RETUR
 		return this as any;
 	}
 
+	@Override @Bound public switch<COLUMN extends keyof SCHEMA> (column: COLUMN, initializer: (swtch: UpdateSwitch<SCHEMA, COLUMN>) => any) {
+		const swtch = new PostgresUpdateSwitch<SCHEMA, COLUMN>(this.values);
+		initializer(swtch);
+		this.columnUpdates.push([column, swtch]);
+		return this;
+	}
+
 	public async query (pool?: Client | Pool | PoolClient): Promise<RETURN_COLUMNS["length"] extends 0 ? number : Row<SCHEMA, RETURN_COLUMNS[number]>[]>;
 	public async query (pool: Client | Pool | PoolClient | undefined, resultObject: true): Promise<Overwrite<QueryResult, { rows: Row<SCHEMA, RETURN_COLUMNS[number]>[] }>>;
 	@Override public async query (pool?: Client | Pool | PoolClient, resultObject?: boolean) {
@@ -44,7 +51,7 @@ export default class PostgresUpdate<SCHEMA extends { [key: string]: any }, RETUR
 		let query = `UPDATE ${this.table.name}`;
 
 		if (!this.columnUpdates.length) throw new Error("No columns to update");
-		query += ` SET ${this.columnUpdates.map(([column, value]) => `${column} = ${this.value(value)}`).join(", ")}`;
+		query += ` SET ${this.columnUpdates.map(([column, value]) => `${column} = ${value instanceof PostgresUpdateSwitch ? value["compile"]() : this.value(value)}`).join(", ")}`;
 
 		const where = this.expression.compile();
 		if (where) query += ` WHERE ${where}`;
@@ -52,6 +59,43 @@ export default class PostgresUpdate<SCHEMA extends { [key: string]: any }, RETUR
 		if (this.returnColumns.length) query += ` RETURNING ${this.returnColumns.join(",")}`;
 
 		return { query, values: this.values };
+	}
+
+	@Bound private value (value?: string | number | null | (string | number | null)[]) {
+		this.values.push(value);
+		return `$${this.values.length}`;
+	}
+}
+
+export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> {
+
+	private cases: [PostgresExpression<SCHEMA>, any][];
+	public constructor (private values: any[]) { }
+
+	public get when (): ExpressionBuilder<SCHEMA, UpdateSwitchThen<DataTypeValue<SCHEMA[COLUMN]>, this>> {
+		return createExpressionBuilder((options, column, operation, ...values) => {
+			const expression = new PostgresExpression<SCHEMA>(this.value);
+			expression.createBuilder(options, column, operation, ...values);
+			return {
+				then: value => {
+					this.cases.push([expression, value]);
+					return this;
+				},
+			};
+		});
+	}
+
+	// @ts-ignore
+	private compile () {
+		let query = `CASE `;
+
+		const cases = this.cases.map(([expression, value]) => [expression.compile(), value] as const)
+			.filter(([expression]) => expression);
+
+		if (!cases.length) throw new Error("No cases for update");
+		query += this.cases.map(([expression, value]) => `WHEN ${expression} THEN ${this.value(value)}`);
+
+		return query + " END";
 	}
 
 	@Bound private value (value?: string | number | null | (string | number | null)[]) {
