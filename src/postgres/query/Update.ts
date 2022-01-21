@@ -69,7 +69,7 @@ export default class PostgresUpdate<SCHEMA extends { [key: string]: any }, RETUR
 
 export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> {
 
-	private cases: [PostgresExpression<SCHEMA>, any][];
+	private cases: [PostgresExpression<SCHEMA>, any][] = [];
 	public constructor (private values: any[]) { }
 
 	public get when (): ExpressionBuilder<SCHEMA, UpdateSwitchThen<DataTypeValue<SCHEMA[COLUMN]>, this>> {
