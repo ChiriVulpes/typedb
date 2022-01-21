@@ -93,7 +93,7 @@ export class PostgresUpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN 
 			.filter(([expression]) => expression);
 
 		if (!cases.length) throw new Error("No cases for update");
-		query += this.cases.map(([expression, value]) => `WHEN ${expression} THEN ${this.value(value)}`);
+		query += cases.map(([expression, value]) => `WHEN ${expression} THEN ${this.value(value)}`);
 
 		return query + " END";
 	}
