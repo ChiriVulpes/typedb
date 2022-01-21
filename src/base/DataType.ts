@@ -85,3 +85,8 @@ type DataTypeValueInternal<DATATYPE extends DataType> = {
 export type Row<SCHEMA, COLUMNS extends keyof SCHEMA = keyof SCHEMA> = {
 	[COLUMN in COLUMNS]: Exclude<DataTypeValue<SCHEMA[COLUMN]>, null>;
 };
+
+export type DataTypeName<DATATYPE_NAMES extends Record<DataType, string>, DATATYPE> =
+	// DATATYPE extends DataType[] ? (DATATYPE extends (infer D)[] ? (typeof postgresDataTypes)[Extract<D, DataType>] : never) :
+	DATATYPE extends DataType ? (DATATYPE extends infer D ? DATATYPE_NAMES[Extract<D, DataType>] : never)
+	: never;

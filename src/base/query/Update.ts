@@ -1,10 +1,10 @@
 import Bound from "../../decorator/Bound";
-import { DataTypeValue } from "../DataType";
+import { DataType, DataTypeName, DataTypeValue } from "../DataType";
 import { ExpressionBuilder } from "./Expression";
 
-export interface UpdateColumns<SCHEMA extends { [key: string]: any }> {
+export interface UpdateColumns<DATATYPE_NAMES extends Record<DataType, string>, SCHEMA extends { [key: string]: any }> {
 	column<COLUMN extends keyof SCHEMA> (column: COLUMN, value: DataTypeValue<SCHEMA[COLUMN]>): this;
-	switch<COLUMN extends keyof SCHEMA> (column: COLUMN, cases: (swtch: UpdateSwitch<SCHEMA, COLUMN>) => any): this;
+	switch<COLUMN extends keyof SCHEMA> (column: COLUMN, type: DataTypeName<DATATYPE_NAMES, SCHEMA[COLUMN]>, cases: (swtch: UpdateSwitch<SCHEMA, COLUMN>) => any): this;
 }
 
 export interface UpdateSwitch<SCHEMA extends { [key: string]: any }, COLUMN extends keyof SCHEMA> {
@@ -16,8 +16,8 @@ export interface UpdateSwitchThen<T, R> {
 	then (value: T): R;
 }
 
-export default abstract class Update<SCHEMA extends { [key: string]: any }, RETURN>
-	implements UpdateColumns<SCHEMA> {
+export default abstract class Update<DATATYPE_NAMES extends Record<DataType, string>, SCHEMA extends { [key: string]: any }, RETURN>
+	implements UpdateColumns<DATATYPE_NAMES, SCHEMA> {
 
 	protected readonly columnUpdates: [keyof SCHEMA, any][] = [];
 
@@ -28,12 +28,12 @@ export default abstract class Update<SCHEMA extends { [key: string]: any }, RETU
 		return this;
 	}
 
-	public columns (initializer: (update: UpdateColumns<SCHEMA>) => any) {
+	public columns (initializer: (update: UpdateColumns<DATATYPE_NAMES, SCHEMA>) => any) {
 		initializer(this);
 		return this;
 	}
 
-	public abstract switch<COLUMN extends keyof SCHEMA> (column: COLUMN, cases: (swtch: UpdateSwitch<SCHEMA, COLUMN>) => any): this;
+	public abstract switch<COLUMN extends keyof SCHEMA> (column: COLUMN, type: DataTypeName<DATATYPE_NAMES, SCHEMA[COLUMN]>, cases: (swtch: UpdateSwitch<SCHEMA, COLUMN>) => any): this;
 
 	public abstract query (): Promise<RETURN>;
 }

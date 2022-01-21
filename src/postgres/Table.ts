@@ -1,11 +1,12 @@
 import { Client, Pool, PoolClient, QueryResult } from "pg";
 import Table from "../base/Table";
 import Override from "../decorator/Override";
+import { PostgresDataTypeNames } from "./DataType";
 import PostgresInsert from "./query/Insert";
 import PostgresSelect from "./query/Select";
 import PostgresUpdate from "./query/Update";
 
-export default class PostgresTable<SCHEMA extends { [key: string]: any; }> extends Table<SCHEMA, true> {
+export default class PostgresTable<SCHEMA extends { [key: string]: any; }> extends Table<PostgresDataTypeNames, SCHEMA, true> {
 	public constructor (public readonly name: string, private readonly pool: Client | Pool | PoolClient) {
 		super(name);
 	}
