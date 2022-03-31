@@ -26,9 +26,9 @@ export default class PostgresInsert<SCHEMA extends { [key: string]: any }, COLUM
 		return this as any;
 	}
 
-	public async query (pool?: Client | Pool | PoolClient): Promise<RETURN_COLUMNS["length"] extends 0 ? number : Row<SCHEMA, RETURN_COLUMNS[number]>[]>;
-	public async query (pool: Client | Pool | PoolClient | undefined, resultObject: true): Promise<Overwrite<QueryResult, { rows: Row<SCHEMA, RETURN_COLUMNS[number]>[] }>>;
-	@Override public async query (pool?: Client | Pool | PoolClient, resultObject?: boolean) {
+	public async query (pool?: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>): Promise<RETURN_COLUMNS["length"] extends 0 ? number : Row<SCHEMA, RETURN_COLUMNS[number]>[]>;
+	public async query (pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient> | undefined, resultObject: true): Promise<Overwrite<QueryResult, { rows: Row<SCHEMA, RETURN_COLUMNS[number]>[] }>>;
+	@Override public async query (pool?: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>, resultObject?: boolean) {
 		const results = await this.table.query(pool!, this.compile());
 
 		if (resultObject) return results;

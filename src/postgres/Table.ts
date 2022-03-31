@@ -7,7 +7,7 @@ import PostgresSelect from "./query/Select";
 import PostgresUpdate from "./query/Update";
 
 export default class PostgresTable<SCHEMA extends { [key: string]: any; }> extends Table<PostgresDataTypeNames, SCHEMA, true> {
-	public constructor (public readonly name: string, private readonly pool: Client | Pool | PoolClient) {
+	public constructor (public readonly name: string, private readonly pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>) {
 		super(name);
 	}
 
@@ -30,12 +30,15 @@ export default class PostgresTable<SCHEMA extends { [key: string]: any; }> exten
 	}
 
 	public async query (query: string | { query: string; values: any[] }): Promise<QueryResult>;
-	public async query (pool: Client | Pool | PoolClient, query: string | { query: string; values: any[] }): Promise<QueryResult>;
-	@Override public async query (pool: Client | Pool | PoolClient | string | { query: string; values: any[] }, query?: string | { query: string; values: any[] }) {
-		if (pool && (typeof pool !== "object" || {}.constructor === pool.constructor)) {
+	public async query (pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>, query: string | { query: string; values: any[] }): Promise<QueryResult>;
+	@Override public async query (pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient> | string | { query: string; values: any[] }, query?: string | { query: string; values: any[] }) {
+		if (pool && !(pool instanceof Promise) && (typeof pool !== "object" || {}.constructor === pool.constructor)) {
 			query = pool as string | { query: string; values: any[] };
 			pool = this.pool;
 		}
+
+		if (pool instanceof Promise)
+			pool = await pool;
 
 		let values: any[] = [];
 		if (typeof query === "object") {

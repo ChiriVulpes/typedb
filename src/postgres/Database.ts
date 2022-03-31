@@ -2,10 +2,10 @@ import { Client, Pool, PoolClient } from "pg";
 import PostgresTable from "./Table";
 
 export default class PostgresDatabase<TABLES extends { [key: string]: any }> {
-	public constructor (private pool: Client | Pool | PoolClient) {
+	public constructor (private pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>) {
 	}
 
-	public setPool (pool: Client | Pool | PoolClient) {
+	public setPool (pool: Client | Pool | PoolClient | Promise<Client | Pool | PoolClient>) {
 		this.pool = pool;
 		return this;
 	}
