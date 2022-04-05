@@ -18,9 +18,9 @@ export const defaultConfig: TypeDBConfig = {
 	},
 };
 
-export default new class {
+class Config {
 	private cwd: string | undefined;
-	private config: TypeDBConfig;
+	private config?: TypeDBConfig;
 
 	public getPath (pathName: keyof TypeDBConfig["paths"], cwd = process.cwd()) {
 		const config = this.get();
@@ -54,4 +54,6 @@ export default new class {
 		delete this.cwd;
 		throw new Error("No typedb.json config file found.");
 	}
-};
+}
+
+export default new Config;

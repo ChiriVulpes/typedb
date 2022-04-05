@@ -11,7 +11,7 @@ export default function (table: string) {
 	const tablesDir = Config.getPath("tables");
 	try {
 		mkdirp.sync(tablesDir);
-	} catch (err) {
+	} catch (err: any) {
 		if (err.code === "EEXIST")
 			throw new Error(`Can't create tables directory, a file already exists by that name.`);
 	}
@@ -25,7 +25,7 @@ export default function (table: string) {
 	const tableMigrationsDir = path.join(migrationsDir, table);
 	try {
 		mkdirp.sync(tableMigrationsDir);
-	} catch (err) {
+	} catch (err: any) {
 		if (err.code === "EEXIST")
 			throw new Error(`Can't create migrations directory for table "${table}", a file already exists by that name.`);
 	}

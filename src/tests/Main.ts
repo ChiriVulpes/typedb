@@ -34,7 +34,7 @@ describe("CLI", () => {
 		if (!config) {
 			try {
 				fs.unlinkSync("typedb.json");
-			} catch (err) {
+			} catch (err: any) {
 				if (err.code !== "ENOENT") throw err;
 			}
 		} else {

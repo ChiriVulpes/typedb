@@ -22,7 +22,7 @@ export class PostgresExpression<SCHEMA extends { [key: string]: any }> extends E
 
 	@Bound
 	public createBuilder (options: ExpressionBuilderOptions2, column: string | ((expr: ExpressionBuilder<SCHEMA, any>) => any), operation?: string, ...values: (string | number | null)[]) {
-		const builder = (options.needsNewAndOrBuilder === false ? undefined : new PostgresExpressionAndOr(this))!;
+		const builder = (options.needsNewAndOrBuilder === false ? undefined : new PostgresExpressionAndOr(this)) as PostgresExpressionAndOr<SCHEMA>;
 
 		const notString = options.not ? "NOT " : "";
 

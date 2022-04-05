@@ -14,5 +14,5 @@ export default abstract class Table<DATATYPE_NAMES extends Record<DataType, stri
 
 	public abstract update<COLUMNS extends (keyof SCHEMA)[]> (...columns: COLUMNS): Update<DATATYPE_NAMES, SCHEMA, any>;
 
-	public abstract async query (query: string | { query: string; values: any[] }): Promise<any>;
+	public abstract query (query: string | { query: string; values: any[] }): Promise<any>;
 }

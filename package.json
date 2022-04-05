@@ -30,6 +30,7 @@
 		"@types/pg": "7.4.14",
 		"@types/sanitize-filename": "1.1.28",
 		"@types/sqlite3": "3.1.5",
+		"ansicolor": "1.1.100",
 		"chai-as-promised": "7.1.1",
 		"chai": "4.2.0",
 		"del": "5.1.0",
@@ -44,6 +45,6 @@
 		"tslint-override": "0.5.1",
 		"tslint": "5.20.1",
 		"typescript-tslint-plugin": "0.5.5",
-		"typescript": "3.7.3"
+		"typescript": "4.6.3"
 	}
 }
