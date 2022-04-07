@@ -1,4 +1,5 @@
 import mocha from "gulp-mocha";
+import { fs } from "mz";
 import Task, { Pipe, remove } from "./gulp/Task";
 import TypescriptWatch from "./gulp/TypescriptWatch";
 
@@ -13,6 +14,14 @@ Task.create("mocha", Pipe.create("out/tests/Main.js", { read: false })
 new Task("compile-test", remove("out"))
 	.then("compile", async () => new TypescriptWatch("src", "out").once())
 	.then("mocha")
+	.create();
+
+new Task("build", "compile-test")
+	.then("replace-gitignore", done => {
+		fs.unlink(".gitignore");
+		fs.renameSync("out.gitignore", ".gitignore");
+		done();
+	})
 	.create();
 
 new Task("watch", remove("out"))

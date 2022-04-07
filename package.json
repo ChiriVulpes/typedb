@@ -9,7 +9,7 @@
 	"main": "out/TypeDB.js",
 	"types": "./out/TypeDB.d.ts",
 	"scripts": {
-		"build": "npx gulp compile-test"
+		"build": "npx gulp build"
 	},
 	"dependencies": {
 		"chalk": "3.0.0",
