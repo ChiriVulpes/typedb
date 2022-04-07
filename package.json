@@ -8,6 +8,9 @@
 	},
 	"main": "out/TypeDB.js",
 	"types": "./out/TypeDB.d.ts",
+	"scripts": {
+		"build": "npx gulp compile-test"
+	},
 	"dependencies": {
 		"chalk": "3.0.0",
 		"deepmerge": "4.2.2",
