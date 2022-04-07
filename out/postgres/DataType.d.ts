@@ -1,0 +1,27 @@
+export declare const postgresDataTypes: {
+    readonly 0: "INTEGER";
+    readonly 1: "INTEGER";
+    readonly 2: "SMALLINT";
+    readonly 3: "SMALLINT";
+    readonly 4: "INTEGER";
+    readonly 5: "BIGINT";
+    readonly 6: "DECIMAL";
+    readonly 7: "NUMERIC";
+    readonly 8: "REAL";
+    readonly 9: "DOUBLE PRECISION";
+    readonly 10: "";
+    readonly 11: "DATE";
+    readonly 12: "TIMESTAMP";
+    readonly 13: "TIMESTAMP";
+    readonly 14: "TIME";
+    readonly 15: "";
+    readonly 16: "";
+    readonly 17: "";
+    readonly 18: "";
+    readonly 19: "";
+    readonly 20: "";
+    readonly 21: "TEXT";
+    readonly 22: "";
+    readonly 23: "";
+};
+export declare type PostgresDataTypeNames = typeof postgresDataTypes;
