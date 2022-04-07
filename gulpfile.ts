@@ -1,19 +1,17 @@
-import mocha from "gulp-mocha";
 import { fs } from "mz";
-import Task, { Pipe, remove } from "./gulp/Task";
+import Task, { remove } from "./gulp/Task";
 import TypescriptWatch from "./gulp/TypescriptWatch";
 
 ////////////////////////////////////
 // Tasks
 //
 
-Task.create("mocha", Pipe.create("out/tests/Main.js", { read: false })
-	.pipe(() => mocha({ reporter: "even-more-min" }))
-	.on("error", () => process.exitCode = 1));
+// Task.create("mocha", Pipe.create("out/tests/Main.js", { read: false })
+// 	.pipe(() => mocha({ reporter: "even-more-min" }))
+// 	.on("error", () => process.exitCode = 1));
 
 new Task("compile-test", remove("out"))
 	.then("compile", async () => new TypescriptWatch("src", "out").once())
-	.then("mocha")
 	.create();
 
 new Task("build", "compile-test")
@@ -26,7 +24,7 @@ new Task("build", "compile-test")
 
 new Task("watch", remove("out"))
 	.then("compile-test", async () => new TypescriptWatch("src", "out")
-		.onComplete(Task.get("mocha"))
+		// .onComplete(Task.get("mocha"))
 		.watch()
 		.waitForInitial())
 	.create();

@@ -3,9 +3,6 @@
 	"description": "",
 	"version": "0.1.0",
 	"license": "MIT",
-	"bin": {
-		"typedb": "out/cli.js"
-	},
 	"main": "out/TypeDB.js",
 	"types": "./out/TypeDB.d.ts",
 	"scripts": {
